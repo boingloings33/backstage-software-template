@@ -4,7 +4,7 @@ kind: Template
 # some metadata about the template itself
 metadata:
   name: ${{values.app_name}}
-  title: Python Flask Template v5
+  title: Python Flask Template v6
   description: Provisions a minimal flask app.
 spec:
   owner: development
