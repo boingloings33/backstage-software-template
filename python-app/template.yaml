@@ -4,7 +4,7 @@ kind: Template
 # some metadata about the template itself
 metadata:
   name: python-app
-  title: Python Flask Template v3
+  title: Python Flask Template v4
   description: Provisions a minimal flask app.
 spec:
   owner: development
@@ -54,6 +54,7 @@ spec:
         description: This is ${{ parameters.component_id }}
         repoUrl: github.com?owner=boingloings33&repo=${{ parameters.component_id }}
         protectDefaultBranch: false
+        repoVisibility: public
 
     - id: register
       name: Register
