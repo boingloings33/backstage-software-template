@@ -31,7 +31,7 @@ jobs:
       commit_id: ${{ '${{ env.SHORT_SHA }}' }}
   cd:
     needs: ci
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
 
@@ -40,7 +40,7 @@ jobs:
           sudo apt update
           sudo apt install -y pipx
           pipx install yq
-          yq -Yi '.image.tag = "${{ needs.ci.outputs.commit_id }}"' charts/${{values.app_name}}/values-${{values.app_env}}.yaml
+          ~/.local/bin/yq -Yi '.image.tag = "${{ '${{ needs.ci.outputs.commit_id }}' }}"' charts/${{values.app_name}}/values-${{values.app_env}}.yaml
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
