@@ -76,7 +76,7 @@ jobs:
           fi
 
           # Ensure app exists
-          if ! argocd app list | grep -q "^${{values.app_name}}"; then
+          if ! argocd app list | grep -q "^${{values.app_name}}"; then:
             argocd app create ${{values.app_name}} \
               --repo "$REPO_URL" \
               --path charts/${{values.app_name}} \
