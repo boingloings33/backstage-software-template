@@ -4,7 +4,7 @@ kind: Template
 # some metadata about the template itself
 metadata:
   name: python-flask-template
-  title: Python Flask Template 1.0
+  title: Python Flask Template 1.0.0
   description: Provisions a minimal flask app.
 spec:
   owner: development

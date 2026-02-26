@@ -10,7 +10,7 @@ def info():
     return jsonify({
         'time': datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"),
         'hostname': socket.gethostname(),
-        'message': "Prod version 1.012?",
+        'message': "Prod version 1.0121?",
         'deployed_on': 'Kubernetes'
         'env': '${{values.app_env}}',
         'app_name': '${{values.app_name}}'
