@@ -1,0 +1,11 @@
+site_name: "${{values.app_name}}"
+site_description: "Documentation for the ${{values.app_name}} application"
+repo_url: https://github.com/boingloings33/${{values.app_name}}
+edit_url: ediot/master/docs/
+
+plugins:
+  - techdocs-core
+
+nav:
+  - Overview:
+      - Getting Started: docs/index.md

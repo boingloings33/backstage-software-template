@@ -1,0 +1,65 @@
+name: cicd
+
+on:
+  push:
+    paths:
+      - "src/**"
+    branches:
+      - master
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ '${{ secrets.DOCKERHUB_USERNAME }}' }}
+          password: ${{ '${{ secrets.DOCKERHUB_TOKEN }}' }}
+      - name: Set short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::6}" >> $GITHUB_ENV
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: neptr33/${{ values.app_name }}:${{ '${{ env.SHORT_SHA }}' }}
+        env:
+          DOCKER_USERNAME: ${{ '${{ secrets.DOCKERHUB_USERNAME }}' }}
+          DOCKER_PASSWORD: ${{ '${{ secrets.DOCKERHUB_TOKEN }}' }}
+    outputs:
+      commit_id: ${{ '${{ env.SHORT_SHA }}' }}
+  cd:
+    needs: ci
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Modify values file
+        run: |
+          sudo apt update
+          sudo apt install -y pipx
+          pipx install yq
+          ~/.local/bin/yq -Yi '.image.tag = "${{ '${{ needs.ci.outputs.commit_id }}' }}"' charts/${{values.app_name}}/values-${{values.app_env}}.yaml
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "Update values.yaml with commit ${{ '${{ needs.ci.outputs.commit_id }}' }}"
+          github_token: ${{ '${{ secrets.REPO_PAT }}' }}
+
+      - name: Install ArgoCD
+        run: |
+          curl -sSL -o argocd \
+            https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd
+          sudo mv argocd /usr/local/bin/argocd
+
+      - name: Sync App
+        run: |
+          argocd login argocd-server.argocd \
+            --insecure \
+            --grpc-web \
+            --username admin \
+            --password ${{ '${{ secrets.ARGOCD_PASSWORD }}' }}
+          argocd app sync ${{values.app_name}}
