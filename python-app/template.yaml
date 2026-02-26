@@ -4,7 +4,7 @@ kind: Template
 # some metadata about the template itself
 metadata:
   name: python-app
-  title: Python Flask Template v2
+  title: Python Flask Template v3
   description: Provisions a minimal flask app.
 spec:
   owner: development
@@ -49,8 +49,8 @@ spec:
       name: Publish
       action: publish:github
       input:
-        # allowedHosts:
-        #   - github.com
+        allowedHosts:
+          - github.com
         description: This is ${{ parameters.component_id }}
         repoUrl: github.com?owner=boingloings33&repo=${{ parameters.component_id }}
         protectDefaultBranch: false
