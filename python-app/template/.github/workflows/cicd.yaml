@@ -5,7 +5,7 @@ on:
     paths:
       - "src/**"
     branches:
-      - master
+      - main
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -31,7 +31,7 @@ jobs:
       commit_id: ${{ '${{ env.SHORT_SHA }}' }}
   cd:
     needs: ci
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -40,7 +40,7 @@ jobs:
           sudo apt update
           sudo apt install -y pipx
           pipx install yq
-          ~/.local/bin/yq -Yi '.image.tag = "${{ '${{ needs.ci.outputs.commit_id }}' }}"' charts/${{values.app_name}}/values-${{values.app_env}}.yaml
+          yq -Yi '.image.tag = "${{ needs.ci.outputs.commit_id }}"' charts/python-app1/values-dev.yaml
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
