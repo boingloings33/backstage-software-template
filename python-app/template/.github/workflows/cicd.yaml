@@ -66,22 +66,27 @@ jobs:
       - name: Ensure argocd repo and app exist
         shell: bash
         run: |
-          REPO_URL="https://github.com/brenden-baio/pythonican-max.git"
+          set -e
 
-          argocd repo list | grep -q "$REPO_URL" || \
+          REPO_URL="https://github.com/brenden-baio/${{values.app_name}}.git"
+
+          # Ensure repo exists in Argo
+          if ! argocd repo list | grep -q "$REPO_URL"; then
             argocd repo add "$REPO_URL"
+          fi
 
-          argocd app list | grep -q 'pythonican-max' || \
-            argocd app create pythonican-max \
+          # Ensure app exists
+          if ! argocd app list | grep -q "^${{values.app_name}}"; then:
+            argocd app create ${{values.app_name}} \
               --repo "$REPO_URL" \
               --path charts/${{values.app_name}} \
               --dest-namespace ${{values.app_env}} \
               --dest-server https://kubernetes.default.svc \
-              --values values-${{values.app_env}}.yaml
-              --revision main
-              --sync-policy auto \
-              --sync-option CreateNamespace=true \
-              argocd app sync pythonican-max
+              --values values-${{values.app_env}}.yaml \
+              --revision main \
+              --sync-policy automated \
+              --sync-option CreateNamespace=true
+          fi
 
       - name: Argocd Sync App
         shell: bash
